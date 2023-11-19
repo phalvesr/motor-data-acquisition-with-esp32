@@ -1,0 +1,14 @@
+data/
+data/**/*
+.theia/
+.theia/**/*
+
+# Blink and wifi credentials
+# Set the values as declared in the following macros:
+# #define BLYNK_TEMPLATE_ID "<UNIQUE_TEMPLATE_ID>"
+# #define BLYNK_TEMPLATE_NAME "<TEMPLATE_NAME>"
+# #define BLYNK_AUTH_TOKEN "<BLYNK_AUTH_TOKEN>"
+
+# #define WIFI_NETWORK_SSID "<WIFI_NAME>"
+# #define WIFI_NETWORK_PASSWORD "<WIFI_PASSWORD>"
+Credentials.h
