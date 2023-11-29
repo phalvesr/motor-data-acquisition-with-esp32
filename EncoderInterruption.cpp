@@ -14,7 +14,7 @@ const float PULSES_PER_REVOLUTION = 823.1;
 
   The measured waveforms were:
   
-  - When rotating counter-clockwise:
+  - When rotating clockwise:
     Encoder B output generates a high-pulse before Encoder A output
 
       Encoder output A: ___|```|__
