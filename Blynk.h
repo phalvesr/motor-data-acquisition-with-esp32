@@ -9,8 +9,6 @@
 
 #include "MetricDatum.h"
 
-extern int encoderChanges;
-
 void executeBlynkActions();
 void setupBlynk(unsigned long interval, void (*onTerminalEvent)(String), MetricDatum* (*onIntervalMetricsProvider)());
 void notifyDutyCycle(unsigned int dutyCycle);

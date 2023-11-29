@@ -28,7 +28,7 @@ void setup() {
   setupPwm(1000);
   pwmSetDuty(0);
   notifyDutyCycle(0);
-  
+
   pinMode(BUILTIN_LED, OUTPUT);
   digitalWrite(BUILTIN_LED, HIGH);
 }
@@ -57,5 +57,3 @@ void loop() {
 
   executeBlynkActions();
 }
-
-

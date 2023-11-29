@@ -20,7 +20,7 @@ MetricDatum* (*getMetrics)();
 void (*onTerminalEventHandler)(String);
 
 const float millissecondsOnAMinute = 60 * 1000;
-float fromRotationsForSecondToRotationsToMinuteFactor = 0;
+float fromRotationsPerSecondToRotationsToMinuteFactor = 0;
 
 BLYNK_WRITE(BLYNK_TERMINAL_PIN) {
   onTerminalEventHandler(param.asString());
@@ -34,7 +34,7 @@ void onBlynkInterval() {
 
   Blynk.virtualWrite(BLYNK_VOLTAGE_PIN, datum->Voltage);
   Blynk.virtualWrite(BLYNK_CURRENT_PIN, datum->Current);
-  Blynk.virtualWrite(BLYNK_ROTATION_PIN, datum->RotationsPerSecond * fromRotationsForSecondToRotationsToMinuteFactor);
+  Blynk.virtualWrite(BLYNK_ROTATION_PIN, datum->RotationsPerSecond * fromRotationsPerSecondToRotationsToMinuteFactor);
   Blynk.virtualWrite(BLYNK_POWER_PIN, datum->Power);
 
   Blynk.endGroup();
@@ -47,7 +47,7 @@ void setupBlynk(unsigned long interval, void (*onTerminalEvent)(String), MetricD
   getMetrics = onIntervalMetricsProvider;
   onTerminalEventHandler = onTerminalEvent;
 
-  fromRotationsForSecondToRotationsToMinuteFactor = millissecondsOnAMinute / interval;
+  fromRotationsPerSecondToRotationsToMinuteFactor = millissecondsOnAMinute / interval;
 
   Blynk.begin(BLYNK_AUTH_TOKEN, WIFI_NETWORK_SSID, WIFI_NETWORK_PASSWORD);
   timer.setInterval(interval, onBlynkInterval);
