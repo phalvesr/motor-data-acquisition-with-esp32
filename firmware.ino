@@ -1,9 +1,10 @@
 // Modules
 #include "MetricDatum.h"
 #include "EncoderInterruption.h"
-#include "Blynk.h"
+//#include "Blynk.h"
 #include "Pwm.h"
 #include "Ina219.h"
+#include "ArduinoIotCloud.h"
 
 MetricDatum metrics;
 
@@ -16,18 +17,20 @@ void setup() {
   Serial.println("Iniciando projeto");
 
   Serial.println("Configurando ina219...");
-  setupIna219();
+  //setupIna219();
 
   Serial.println("Configurando blynk...");
-  setupBlynk(1000, onTerminalChanged, onMetricsRequsted);
+  // setupBlynk(1000, onTerminalChanged, onMetricsRequsted);
+
+  SetupArduinoIotCloud(1000, onMetricsRequsted);
 
   Serial.println("Configurando interrupcoes...");
-  setupEncoderInterruption();
+  //setupEncoderInterruption();
 
   Serial.println("Configurando PWM...");
-  setupPwm(1000);
-  pwmSetDuty(0);
-  notifyDutyCycle(0);
+  //setupPwm(1000);
+  //pwmSetDuty(0);
+  //notifyDutyCycle(0);
 
   pinMode(BUILTIN_LED, OUTPUT);
   digitalWrite(BUILTIN_LED, HIGH);
@@ -39,7 +42,7 @@ void onTerminalChanged(String data) {
   int newDutyCycle = data.toInt();
 
   pwmSetDuty(newDutyCycle);
-  notifyDutyCycle(newDutyCycle);
+  //notifyDutyCycle(newDutyCycle);
 }
 
 MetricDatum* onMetricsRequsted() {
@@ -55,5 +58,6 @@ MetricDatum* onMetricsRequsted() {
 
 void loop() {
 
-  executeBlynkActions();
+  // executeBlynkActions();
+  ExecuteArduinoIotActions();
 }
