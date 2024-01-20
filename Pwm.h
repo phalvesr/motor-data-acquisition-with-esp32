@@ -7,8 +7,8 @@
   #include "WProgram.h"
 #endif
 
-void setupPwm(u_int frequency);
-void pwmSetDuty(u_int value);
-u_int pwmGetDuty();
+void SetupPwm(u_int frequency);
+void SetPwmDuty(u_int value);
+u_int GetPwmDuty();
 
 #endif

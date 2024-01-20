@@ -9,7 +9,7 @@
 
 #include "MetricDatum.h"
 
-void SetupArduinoIotCloud(unsigned long intervalMs, MetricDatum* (*onMetricsRequested)());
+void SetupArduinoIotCloud(unsigned long intervalMs, void (*onTerminalChanged)(), MetricDatum* (*onMetricsRequested)());
 void ExecuteArduinoIotActions();
 
 #endif

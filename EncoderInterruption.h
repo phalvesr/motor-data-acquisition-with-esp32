@@ -7,7 +7,7 @@
   #include "WProgram.h"
 #endif
 
-void setupEncoderInterruption();
-float getRotations();
+void SetupEncoderInterruption();
+float GetRotations();
 
 #endif

@@ -4,20 +4,33 @@
 #include <ArduinoIoTCloud.h>
 #include <Arduino_ConnectionHandler.h>
 
+#define DEFAULT_UPDATE_INTERVAL (1 * SECONDS)
+
+// Callbacks
 MetricDatum* (*onMetricsRequestedCallback)();
+void (*onTerminalChangedCallback)();
+
 long sendDataIntervalMs = 0;
+
+float Current = 0.0;
+float Power = 0.0;
+float RotationsPerSecond = 0.0;
+float Voltage = 0.0;
+int DutyCycle = 0.0;
+
 
 bool configuredIntervalHasPassed(unsigned long millisAtLastEvent);
 void initProperties();
+void updateMetrics();
 
 WiFiConnectionHandler ArduinoIoTPreferredConnection(WIFI_NETWORK_SSID, WIFI_NETWORK_PASSWORD);
 
-// Public functions - they always start with Capital Letters (AKA follows PascalCase naming convention) 
-void SetupArduinoIotCloud(unsigned long intervalMs, MetricDatum* (*onMetricsRequested)()) {
+void SetupArduinoIotCloud(unsigned long intervalMs, void (*onTerminalChanged)(), MetricDatum* (*onMetricsRequested)()) {
   Serial.println("SETUP ARDUINO IOT CLOUD");
 
   sendDataIntervalMs = intervalMs;
   onMetricsRequestedCallback = onMetricsRequested;
+  onTerminalChangedCallback = onTerminalChanged;
 
   initProperties();
 
@@ -30,26 +43,41 @@ void SetupArduinoIotCloud(unsigned long intervalMs, MetricDatum* (*onMetricsRequ
 void ExecuteArduinoIotActions() {
   ArduinoCloud.update();
 
-  static unsigned long millisAtLastEvent = 0;
+  static unsigned long millisAtLastEvent = millis();
 
   if (!configuredIntervalHasPassed(millisAtLastEvent)) {
     return;
   }
-
-  Serial.println("[ExecuteArduinoIotActions]");
-
+  
+  updateMetrics();
+  
   millisAtLastEvent = millis();
 }
 
-// "private" functions - they always start with lower case letters (AKA follows camelCase naming convention) 
 bool configuredIntervalHasPassed(unsigned long millisAtLastEvent) {
   return (millis() - millisAtLastEvent) >= sendDataIntervalMs;
+}
+
+void updateMetrics() {
+  MetricDatum* metrics = onMetricsRequestedCallback();
+
+  Current = metrics->Current;
+  Power = metrics->Power;
+  RotationsPerSecond = metrics->RotationsPerSecond;
+  Voltage = metrics->Voltage;
+  DutyCycle = metrics->DutyCycle;
 }
 
 void initProperties() {
 
   ArduinoCloud.setBoardId(ARDUINO_IOT_DEVICE_ID);
   ArduinoCloud.setSecretDeviceKey(ARDUINO_IOT_SECRET_KEY);
-  // TODO: Setup pins based on the panel I still need to create
-  // ArduinoCloud.addProperty(test, READ, 1 * SECONDS, NULL);
+  // TODO: Utilize the following line when needed be to update PID parameters
+  // ArduinoCloud.addProperty(test, READWRITE, DEFAULT_UPDATE_INTERVAL, callback);
+
+  ArduinoCloud.addProperty(Voltage, READ, DEFAULT_UPDATE_INTERVAL, onTerminalChangedCallback);
+  ArduinoCloud.addProperty(Current, READ, DEFAULT_UPDATE_INTERVAL, onTerminalChangedCallback);
+  ArduinoCloud.addProperty(RotationsPerSecond, READ, DEFAULT_UPDATE_INTERVAL, onTerminalChangedCallback);
+  ArduinoCloud.addProperty(Power, READ, DEFAULT_UPDATE_INTERVAL, onTerminalChangedCallback);
+  ArduinoCloud.addProperty(DutyCycle, READ, DEFAULT_UPDATE_INTERVAL, onTerminalChangedCallback);
 }

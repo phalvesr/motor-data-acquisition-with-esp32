@@ -1,7 +1,6 @@
 // Modules
 #include "MetricDatum.h"
 #include "EncoderInterruption.h"
-//#include "Blynk.h"
 #include "Pwm.h"
 #include "Ina219.h"
 #include "ArduinoIotCloud.h"
@@ -9,7 +8,7 @@
 MetricDatum metrics;
 
 MetricDatum* onMetricsRequsted();
-void onTerminalChanged(String data);
+void onTerminalChanged();
 
 void setup() {
 
@@ -17,47 +16,36 @@ void setup() {
   Serial.println("Iniciando projeto");
 
   Serial.println("Configurando ina219...");
-  //setupIna219();
+  SetupIna219();
 
-  Serial.println("Configurando blynk...");
-  // setupBlynk(1000, onTerminalChanged, onMetricsRequsted);
-
-  SetupArduinoIotCloud(1000, onMetricsRequsted);
+  Serial.println("Configurando Arduino IOT Cloud...");
+  SetupArduinoIotCloud(1000, onTerminalChanged, onMetricsRequsted);
 
   Serial.println("Configurando interrupcoes...");
-  //setupEncoderInterruption();
+  SetupEncoderInterruption();
 
   Serial.println("Configurando PWM...");
-  //setupPwm(1000);
-  //pwmSetDuty(0);
-  //notifyDutyCycle(0);
+  SetupPwm(1000);
+  SetPwmDuty(0);
 
   pinMode(BUILTIN_LED, OUTPUT);
   digitalWrite(BUILTIN_LED, HIGH);
 }
 
-void onTerminalChanged(String data) {
-  Serial.println(data);
-
-  int newDutyCycle = data.toInt();
-
-  pwmSetDuty(newDutyCycle);
-  //notifyDutyCycle(newDutyCycle);
+void onTerminalChanged() {
+  Serial.println("Changed values");
 }
 
 MetricDatum* onMetricsRequsted() {
-
-  metrics.Current = getCurrentInAmpere();
-  metrics.Power = getPowerInWatts();
-  metrics.RotationsPerSecond = getRotations();
-  metrics.Voltage = getLoadVoltageInVolts();
-  metrics.DutyCycle = pwmGetDuty();
+  metrics.Current = GetCurrentInAmpere();
+  metrics.Power = GetPowerInWatts();
+  metrics.RotationsPerSecond = GetRotations();
+  metrics.Voltage = GetLoadVoltageInVolts();
+  metrics.DutyCycle = GetPwmDuty();
 
   return &metrics;
 }
 
 void loop() {
-
-  // executeBlynkActions();
   ExecuteArduinoIotActions();
 }
