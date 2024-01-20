@@ -7,9 +7,9 @@
   #include "WProgram.h"
 #endif
 
-void setupIna219();
-float getCurrentInAmpere();
-float getLoadVoltageInVolts();
-float getPowerInWatts();
+void SetupIna219();
+float GetCurrentInAmpere();
+float GetLoadVoltageInVolts();
+float GetPowerInWatts();
 
 #endif

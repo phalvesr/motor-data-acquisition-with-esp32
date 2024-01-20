@@ -38,13 +38,13 @@ void onEncoderInterruption() {
   }
 }
 
-void setupEncoderInterruption() {
+void SetupEncoderInterruption() {
 
   attachInterrupt(digitalPinToInterrupt(ENCODER_INPUT_A), onEncoderInterruption, RISING);
   attachInterrupt(digitalPinToInterrupt(ENCODER_INPUT_B), onEncoderInterruption, RISING);
 }
 
-float getRotations() {
+float GetRotations() {
 
   float changesSinceLastCall = encoderChanges;
   encoderChanges = 0;

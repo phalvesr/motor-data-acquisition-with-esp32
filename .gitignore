@@ -12,3 +12,5 @@ data/**/*
 # #define WIFI_NETWORK_SSID "<WIFI_NAME>"
 # #define WIFI_NETWORK_PASSWORD "<WIFI_PASSWORD>"
 Credentials.h
+
+**/*.deprecated
