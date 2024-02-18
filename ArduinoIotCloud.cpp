@@ -18,8 +18,12 @@ float RotationsPerSecond = 0.0;
 float Voltage = 0.0;
 int DutyCycle = 0.0;
 
+float Kp = 0.0;
+float Ki = 0.0;
+float Kd = 0.0;
 
-bool configuredIntervalHasPassed(unsigned long millisAtLastEvent);
+inline bool configuredIntervalHasPassed(unsigned long millisAtLastEvent);
+
 void initProperties();
 void updateMetrics();
 
@@ -54,7 +58,7 @@ void ExecuteArduinoIotActions() {
   millisAtLastEvent = millis();
 }
 
-bool configuredIntervalHasPassed(unsigned long millisAtLastEvent) {
+inline bool configuredIntervalHasPassed(unsigned long millisAtLastEvent) {
   return (millis() - millisAtLastEvent) >= sendDataIntervalMs;
 }
 
