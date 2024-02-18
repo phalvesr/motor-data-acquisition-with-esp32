@@ -21,5 +21,3 @@ float GetLoadVoltageInVolts() {
 float GetPowerInWatts() {
   return ina219.getPower_mW() / 1000.0;
 }
-
-
