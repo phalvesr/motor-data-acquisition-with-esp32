@@ -5,6 +5,8 @@
 #include "Ina219.h"
 #include "ArduinoIotCloud.h"
 
+#include <LiquidCrystal.h>
+
 MetricDatum metrics;
 
 MetricDatum* onMetricsRequsted();
