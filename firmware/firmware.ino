@@ -1,11 +1,14 @@
+#define SEND_DATA_INTERVAL_MS 1000
+
 // Modules
 #include "MetricDatum.h"
 #include "EncoderInterruption.h"
 #include "Pwm.h"
 #include "Ina219.h"
-#include "ArduinoIotCloud.h"
+#include "Influxdb.h"
 
 MetricDatum metrics;
+unsigned long millisAtLastEvent = millis();
 
 MetricDatum* onMetricsRequsted();
 void onTerminalChanged();
@@ -18,8 +21,8 @@ void setup() {
   Serial.println("Configurando ina219...");
   SetupIna219();
 
-  Serial.println("Configurando Arduino IOT Cloud...");
-  SetupArduinoIotCloud(1000, onTerminalChanged, onMetricsRequsted);
+  Serial.println("Configurando InfluxDB...");
+  ConfigureInfluxDbClient();
 
   Serial.println("Configurando interrupcoes...");
   SetupEncoderInterruption();
@@ -30,10 +33,6 @@ void setup() {
 
   pinMode(BUILTIN_LED, OUTPUT);
   digitalWrite(BUILTIN_LED, HIGH);
-}
-
-void onTerminalChanged() {
-  Serial.println("Changed values");
 }
 
 MetricDatum* onMetricsRequsted() {
@@ -47,5 +46,16 @@ MetricDatum* onMetricsRequsted() {
 }
 
 void loop() {
-  ExecuteArduinoIotActions();
+  if (!configuredIntervalHasPassed()) {
+    return;
+  }
+
+  Serial.println("Acao");
+  SendMetrics(onMetricsRequsted());
+
+  millisAtLastEvent = millis();
+}
+
+bool configuredIntervalHasPassed() {
+  return (millis() - millisAtLastEvent) >= SEND_DATA_INTERVAL_MS;
 }
