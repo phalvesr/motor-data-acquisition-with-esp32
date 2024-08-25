@@ -38,11 +38,11 @@ void setup() {
 }
 
 MetricDatum* onMetricsRequsted() {
-  metrics.Current = random(0, 1023); //GetCurrentInAmpere();
-  metrics.Power = random(0, 1023); //GetPowerInWatts();
-  metrics.RotationsPerSecond = random(0, 1023); //GetRotations();
-  metrics.Voltage = random(0, 1023); //GetLoadVoltageInVolts();
-  metrics.DutyCycle = random(0, 1023); //GetPwmDuty();
+  metrics.Current = GetCurrentInAmpere();
+  metrics.Power = GetPowerInWatts();
+  metrics.RotationsPerSecond = GetRotations();
+  metrics.Voltage = GetLoadVoltageInVolts();
+  metrics.DutyCycle = GetPwmDuty();
 
   return &metrics;
 }
