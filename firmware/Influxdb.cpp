@@ -31,7 +31,7 @@ void ConfigureInfluxDbClient() {
   addConfigurationToInfluxDbClient();
 }
 
-void SendMetrics(MetricDatum *metrics) {
+void SendMetrics(MetricDatum *metrics) {  
   _sensor.clearFields();
   
   _sensor.addField("current", metrics->Current);

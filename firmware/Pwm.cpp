@@ -3,7 +3,6 @@
 
 #include "Pwm.h"
 
-u_int frequency = 1000;
 const int resolution = 8;
 
 u_int currentDutyCycle = 0;

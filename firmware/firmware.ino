@@ -1,3 +1,4 @@
+#define ACQUIRE_DATA_INTERVAL_MS 200
 #define SEND_DATA_INTERVAL_MS 1000
 
 // Modules
@@ -9,6 +10,7 @@
 
 MetricDatum metrics;
 unsigned long millisAtLastEvent = millis();
+unsigned long millisAtDataAcquisition = millis();
 
 MetricDatum* onMetricsRequsted();
 void onTerminalChanged();
@@ -29,12 +31,10 @@ void setup() {
 
   Serial.println("Configurando PWM...");
   SetupPwm(1000);
-  SetPwmDuty(0);
+  SetPwmDuty(100);
 
   pinMode(BUILTIN_LED, OUTPUT);
   digitalWrite(BUILTIN_LED, HIGH);
-
-  randomSeed(analogRead(0));
 }
 
 MetricDatum* onMetricsRequsted() {
@@ -47,17 +47,29 @@ MetricDatum* onMetricsRequsted() {
   return &metrics;
 }
 
+bool start = false;
+
 void loop() {
+
+  if (!acquireDataIntervalHasPassed()) {
+    return;
+  } else {
+    
+  }
+
   if (!configuredIntervalHasPassed()) {
     return;
   }
 
-  Serial.println("Acao");
   SendMetrics(onMetricsRequsted());
 
   millisAtLastEvent = millis();
 }
 
-bool configuredIntervalHasPassed() {
+inline bool acquireDataIntervalHasPassed() {
+  return (millis() - millisAtDataAcquisition) >= ACQUIRE_DATA_INTERVAL_MS;
+}
+
+inline bool configuredIntervalHasPassed() {
   return (millis() - millisAtLastEvent) >= SEND_DATA_INTERVAL_MS;
 }
