@@ -1,5 +1,9 @@
 #define ACQUIRE_DATA_INTERVAL_MS 200
 #define SEND_DATA_INTERVAL_MS 1000
+//
+#define PLUS_BUTTON 1
+#define MINUS_BUTTON 2
+#define START_STOP_BUTTON 3
 
 // Modules
 #include "MetricDatum.h"
@@ -9,11 +13,26 @@
 #include "Influxdb.h"
 
 MetricDatum metrics;
+
 unsigned long millisAtLastEvent = millis();
 unsigned long millisAtDataAcquisition = millis();
 
+// Flags
+bool flagPlus = false;
+bool flagMinus = false;
+bool flagStartStop = false;
+
+bool start = false;
+
+u_int dutyCycle = 0;
+
 MetricDatum* onMetricsRequsted();
 void onTerminalChanged();
+void setCurrentMode();
+
+void tryUpdateDutyCycle();
+void tryUpdateStartStop();
+void executeFreeRunMode();
 
 void setup() {
 
@@ -31,7 +50,7 @@ void setup() {
 
   Serial.println("Configurando PWM...");
   SetupPwm(1000);
-  SetPwmDuty(100);
+  SetPwmDuty(dutyCycle);
 
   pinMode(BUILTIN_LED, OUTPUT);
   digitalWrite(BUILTIN_LED, HIGH);
@@ -47,23 +66,68 @@ MetricDatum* onMetricsRequsted() {
   return &metrics;
 }
 
-bool start = false;
-
 void loop() {
+  tryUpdateDutyCycle();
+  tryUpdateStartStop();
 
-  if (!acquireDataIntervalHasPassed()) {
+  if (!start) {
     return;
-  } else {
+  } 
+
+  executeFreeRunMode();
+}
+
+void tryUpdateDutyCycle() {
+  if (!digitalRead(PLUS_BUTTON)) {
+    flagPlus = true;
+  }
+
+  if (digitalRead(PLUS_BUTTON) && flagPlus) {
+    flagPlus = false;
+    dutyCycle += 10;
+  }
+
+  if (!digitalRead(MINUS_BUTTON)) {
+    flagMinus = true;
+  }
+
+  if (digitalRead(MINUS_BUTTON) && flagMinus) {
+    flagMinus = false;
+    dutyCycle -= 10;
+  }
+
+  if (dutyCycle > 100) {
+    dutyCycle = 100;
+  }
+
+  if (dutyCycle < 0) {
+    dutyCycle = 0;
+  }
+}
+
+void tryUpdateStartStop() {
+  if (!digitalRead(START_STOP_BUTTON)) {
+    flagStartStop = true;
+  }
+
+  if (digitalRead(START_STOP_BUTTON) && flagStartStop) {
+    flagStartStop = false;
+    start = !start;
+  }
+}
+
+void executeFreeRunMode() {
+  if (acquireDataIntervalHasPassed()) {
+    AddMeasure(onMetricsRequsted());
     
+    millisAtDataAcquisition = millis();
   }
 
-  if (!configuredIntervalHasPassed()) {
-    return;
+  if (configuredIntervalHasPassed()) {
+    SendMetrics();
+
+    millisAtLastEvent = millis();
   }
-
-  SendMetrics(onMetricsRequsted());
-
-  millisAtLastEvent = millis();
 }
 
 inline bool acquireDataIntervalHasPassed() {

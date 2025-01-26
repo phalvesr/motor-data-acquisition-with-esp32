@@ -20,7 +20,7 @@
 // Internal variables
 // Influxdb client iniciado com os valores de "Credentials.h"
 InfluxDBClient _client(INFLUXDB_URL, INFLUXDB_ORG, INFLUXDB_BUCKET, INFLUXDB_TOKEN, InfluxDbCloud2CACert);
-Point _sensor("device_status");
+// Point _sensor("device_status");
 
 // Internal functions
 void connectToWifi();
@@ -31,16 +31,21 @@ void ConfigureInfluxDbClient() {
   addConfigurationToInfluxDbClient();
 }
 
-void SendMetrics(MetricDatum *metrics) {  
-  _sensor.clearFields();
-  
-  _sensor.addField("current", metrics->Current);
-  _sensor.addField("duty_cycle", metrics->DutyCycle);
-  _sensor.addField("power", metrics->Power);
-  _sensor.addField("rotations_per_second", metrics->RotationsPerSecond);
-  _sensor.addField("voltage", metrics->Voltage);
+void AddMeasure(MetricDatum *metrics) {
+  Point sensor("device_status");
 
-  _client.writePoint(_sensor);
+  sensor.addTag("motor_dc", DEVICE);
+  sensor.addField("current", metrics->Current);
+  sensor.addField("duty_cycle", metrics->DutyCycle);
+  sensor.addField("power", metrics->Power);
+  sensor.addField("rotations_per_second", metrics->RotationsPerSecond);
+  sensor.addField("voltage", metrics->Voltage);
+
+  _client.writePoint(sensor);
+}
+
+void SendMetrics() {  
+  _client.flushBuffer();
 }
 
 void connectToWifi() {
@@ -63,7 +68,8 @@ void connectToWifi() {
 }
 
 void addConfigurationToInfluxDbClient() {
-  timeSync(TZ_INFO, "pool.ntp.org", "time.nis.gov");
+  _client.setWriteOptions(WriteOptions().batchSize(10));
+  _client.setHTTPOptions(HTTPOptions().connectionReuse(true));
 
-  _sensor.addTag("motor_dc", DEVICE);
+  timeSync(TZ_INFO, "pool.ntp.org", "time.nis.gov");
 }

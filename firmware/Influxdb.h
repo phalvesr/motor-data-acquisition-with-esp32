@@ -4,5 +4,7 @@
 #include "MetricDatum.h"
 
 void ConfigureInfluxDbClient();
-void SendMetrics(MetricDatum *metrics);
+void AddMeasure(MetricDatum *metrics);
+void SendMetrics();
+void SendCurrentMode(char currentMode);
 #endif
